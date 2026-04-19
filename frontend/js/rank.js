@@ -17,6 +17,10 @@ const legend = document.getElementById("legend");
 const status = document.getElementById("status");
 const vsCard = document.getElementById("vsCard");
 const vsText = document.getElementById("vsText");
+const victoryModal = document.getElementById("victoryModal");
+const victoryText = document.getElementById("victoryText");
+const victoryBackBtn = document.getElementById("victoryBackBtn");
+const victoryCloseBtn = document.getElementById("victoryCloseBtn");
 
 let socket = null;
 let searching = false;
@@ -24,6 +28,7 @@ let roomCode = "";
 let state = null;
 let remain = 120;
 let timer = null;
+let announcedResultKey = "";
 
 function rankText(player) {
     const displayTier = String(player?.displayTier || player?.rank_tier || "Bronze");
@@ -40,6 +45,37 @@ function setQueueInfo(msg, isError = false) {
 function setStatus(msg, isError = false) {
     status.textContent = msg;
     status.style.color = isError ? "#fecaca" : "#bae6fd";
+}
+
+function hideVictoryDialog() {
+    victoryModal?.classList.add("hidden");
+}
+
+function maybeShowMatchResult(matchState) {
+    if (!matchState || !["finished", "draw"].includes(String(matchState.status))) {
+        return;
+    }
+
+    const resultKey = `${matchState.matchId || "na"}:${matchState.status}:${matchState.winner || 0}`;
+    if (announcedResultKey === resultKey) {
+        return;
+    }
+    announcedResultKey = resultKey;
+
+    if (!victoryModal || !victoryText) {
+        return;
+    }
+
+    if (String(matchState.status) === "draw") {
+        victoryText.textContent = "Tran rank ket thuc voi ket qua hoa.";
+    } else {
+        const roomPlayers = matchState.roomPlayers || [];
+        const winnerInfo = roomPlayers.find((player) => Number(player.player_index) === Number(matchState.winner));
+        const winnerName = String(winnerInfo?.username || `P${matchState.winner}`);
+        victoryText.textContent = `Chuc mung nguoi choi ${winnerName} da thang!`;
+    }
+
+    victoryModal.classList.remove("hidden");
 }
 
 function startCountdown() {
@@ -83,6 +119,8 @@ function ensureSocket() {
 
             roomCode = String(sessionPayload.room.code || "");
             state = sessionPayload.state || null;
+            announcedResultKey = "";
+            hideVictoryDialog();
             setQueueInfo(`Da reconnect vao tran dang choi: ${roomCode}`);
             socket.emit("join_room", { code: roomCode });
 
@@ -90,6 +128,7 @@ function ensureSocket() {
                 renderLegend(legend, state.players || []);
                 renderBoard(board, state, onCellClick);
                 setStatus(buildStatus(state));
+                maybeShowMatchResult(state);
             }
         } catch (_error) {
             // Ignore when no active room is available.
@@ -120,6 +159,8 @@ function ensureSocket() {
         queueBtn.textContent = "Tim tran rank";
         clearInterval(timer);
         roomCode = String(payload?.code || "");
+        announcedResultKey = "";
+        hideVictoryDialog();
         setQueueInfo(`Ghep tran thanh cong: ${roomCode}`);
     });
 
@@ -139,6 +180,7 @@ function ensureSocket() {
             renderLegend(legend, state.players);
             renderBoard(board, state, onCellClick);
             setStatus(buildStatus(state));
+            maybeShowMatchResult(state);
         }
     });
 
@@ -165,6 +207,10 @@ queueBtn?.addEventListener("click", onQueueToggle);
 document.getElementById("backModesBtn")?.addEventListener("click", () => {
     window.location.href = "/modes.html";
 });
+victoryBackBtn?.addEventListener("click", () => {
+    window.location.href = "/modes.html";
+});
+victoryCloseBtn?.addEventListener("click", hideVictoryDialog);
 
 ensureSocket();
 

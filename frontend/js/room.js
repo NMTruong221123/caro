@@ -25,10 +25,15 @@ const sendChatBtn = document.getElementById("sendChatBtn");
 const board = document.getElementById("board");
 const legend = document.getElementById("legend");
 const status = document.getElementById("status");
+const victoryModal = document.getElementById("victoryModal");
+const victoryText = document.getElementById("victoryText");
+const victoryBackBtn = document.getElementById("victoryBackBtn");
+const victoryCloseBtn = document.getElementById("victoryCloseBtn");
 
 let socket = null;
 let room = null;
 let state = null;
+let announcedResultKey = "";
 
 function canStartRoom() {
     if (!room || !currentUser) {
@@ -56,6 +61,37 @@ function setStatus(message, isError = false) {
     status.style.color = isError ? "#fecaca" : "#bae6fd";
 }
 
+function hideVictoryDialog() {
+    victoryModal?.classList.add("hidden");
+}
+
+function maybeShowMatchResult(matchState) {
+    if (!matchState || !["finished", "draw"].includes(String(matchState.status))) {
+        return;
+    }
+
+    const resultKey = `${matchState.matchId || "na"}:${matchState.status}:${matchState.winner || 0}`;
+    if (announcedResultKey === resultKey) {
+        return;
+    }
+    announcedResultKey = resultKey;
+
+    if (!victoryModal || !victoryText) {
+        return;
+    }
+
+    if (String(matchState.status) === "draw") {
+        victoryText.textContent = "Tran dau ket thuc voi ket qua hoa.";
+    } else {
+        const roomPlayers = matchState.roomPlayers || room?.players || [];
+        const winnerInfo = roomPlayers.find((player) => Number(player.player_index) === Number(matchState.winner));
+        const winnerName = String(winnerInfo?.username || `P${matchState.winner}`);
+        victoryText.textContent = `Chuc mung nguoi choi ${winnerName} da thang!`;
+    }
+
+    victoryModal.classList.remove("hidden");
+}
+
 function ensureSocket() {
     if (socket?.connected) {
         return socket;
@@ -76,6 +112,8 @@ function ensureSocket() {
             }
             room = sessionPayload.room;
             state = sessionPayload.state || null;
+            announcedResultKey = "";
+            hideVictoryDialog();
             roomCodeInput.value = room.code;
             setRoomInfo(`Da tu reconnect vao phong ${room.code}.`);
             updateStartButtonState();
@@ -84,6 +122,7 @@ function ensureSocket() {
                 renderLegend(legend, state.players || []);
                 renderBoard(board, state, onCellClick);
                 setStatus(buildStatus(state));
+                maybeShowMatchResult(state);
             }
             socket.emit("join_room", { code: room.code });
         } catch (_error) {
@@ -108,6 +147,7 @@ function ensureSocket() {
             renderLegend(legend, state.players);
             renderBoard(board, state, onCellClick);
             setStatus(buildStatus(state));
+            maybeShowMatchResult(state);
         }
     });
 
@@ -126,6 +166,8 @@ function ensureSocket() {
         if (room?.code && kickedCode === String(room.code).toUpperCase()) {
             room = null;
             state = null;
+            announcedResultKey = "";
+            hideVictoryDialog();
             roomMembers.innerHTML = "";
             board.innerHTML = "";
             legend.innerHTML = "";
@@ -271,6 +313,8 @@ async function onCreateRoom() {
     try {
         const data = await createOnlineRoom(token, { maxPlayers: Number(onlineMaxPlayers.value || 4) });
         room = data.room;
+        announcedResultKey = "";
+        hideVictoryDialog();
         roomCodeInput.value = room.code;
         updateStartButtonState();
         ensureSocket().emit("join_room", { code: room.code });
@@ -288,6 +332,8 @@ async function onJoinRoom() {
     try {
         const data = await joinOnlineRoom(token, { code });
         room = data.room;
+        announcedResultKey = "";
+        hideVictoryDialog();
         updateStartButtonState();
         ensureSocket().emit("join_room", { code });
     } catch (error) {
@@ -348,6 +394,10 @@ chatInput?.addEventListener("keydown", (event) => {
 document.getElementById("backModesBtn")?.addEventListener("click", () => {
     window.location.href = "/modes.html";
 });
+victoryBackBtn?.addEventListener("click", () => {
+    window.location.href = "/modes.html";
+});
+victoryCloseBtn?.addEventListener("click", hideVictoryDialog);
 
 ensureSocket();
 updateStartButtonState();

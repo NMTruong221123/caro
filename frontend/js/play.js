@@ -21,9 +21,14 @@ const startBtn = document.getElementById("startBtn");
 const board = document.getElementById("board");
 const legend = document.getElementById("legend");
 const status = document.getElementById("status");
+const victoryModal = document.getElementById("victoryModal");
+const victoryText = document.getElementById("victoryText");
+const victoryBackBtn = document.getElementById("victoryBackBtn");
+const victoryCloseBtn = document.getElementById("victoryCloseBtn");
 
 let state = null;
 let waiting = false;
+let announcedResultKey = "";
 
 function setStatus(message, isError = false) {
     if (!status) {
@@ -40,6 +45,39 @@ function paint() {
     renderLegend(legend, state.players);
     renderBoard(board, state, onCellClick);
     setStatus(buildStatus(state));
+    maybeShowMatchResult(state);
+}
+
+function hideVictoryDialog() {
+    victoryModal?.classList.add("hidden");
+}
+
+function maybeShowMatchResult(matchState) {
+    if (!matchState || !["finished", "draw"].includes(String(matchState.status))) {
+        return;
+    }
+
+    const resultKey = `${matchState.matchId || "na"}:${matchState.status}:${matchState.winner || 0}`;
+    if (announcedResultKey === resultKey) {
+        return;
+    }
+    announcedResultKey = resultKey;
+
+    if (!victoryModal || !victoryText) {
+        return;
+    }
+
+    if (String(matchState.status) === "draw") {
+        victoryText.textContent = "Tran dau ket thuc voi ket qua hoa.";
+    } else {
+        let winnerName = `P${matchState.winner}`;
+        if (String(matchState.mode) === "ai") {
+            winnerName = Number(matchState.winner) === 1 ? "Ban" : "May";
+        }
+        victoryText.textContent = `Chuc mung nguoi choi ${winnerName} da thang!`;
+    }
+
+    victoryModal.classList.remove("hidden");
 }
 
 async function startGame() {
@@ -54,6 +92,8 @@ async function startGame() {
             aiLevel: String(aiLevel.value || "medium"),
         };
         state = await startMatch(payload, token);
+        announcedResultKey = "";
+        hideVictoryDialog();
         paint();
     } catch (error) {
         setStatus(error.message || "Khong bat dau duoc tran", true);
@@ -92,6 +132,10 @@ startBtn?.addEventListener("click", startGame);
 document.getElementById("backModesBtn")?.addEventListener("click", () => {
     window.location.href = "/modes.html";
 });
+victoryBackBtn?.addEventListener("click", () => {
+    window.location.href = "/modes.html";
+});
+victoryCloseBtn?.addEventListener("click", hideVictoryDialog);
 
 if (mode === "ai") {
     startGame();
