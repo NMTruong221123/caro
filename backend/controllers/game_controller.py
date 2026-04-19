@@ -125,7 +125,11 @@ def play_move(payload: Dict[str, Any], token: str = "") -> Tuple[Dict[str, Any],
         return {"error": "Nuoc di khong hop le"}, 400
 
     if state["mode"] == "ai":
-        db_service.learn_ai_human_move(state["board_size"], row, col)
+        db_service.learn_ai_human_move(
+            state["board_size"],
+            int(human_move["row"]),
+            int(human_move["col"]),
+        )
 
     turn = db_service.count_moves(match_id) + 1
     db_service.save_move(

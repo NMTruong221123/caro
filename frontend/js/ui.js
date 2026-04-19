@@ -20,6 +20,33 @@ function buildMarker(playerToken) {
     return marker;
 }
 
+const MIN_BOARD_ZOOM = 0.6;
+const MAX_BOARD_ZOOM = 2.4;
+const BOARD_ZOOM_STEP = 0.2;
+
+function normalizeZoom(value) {
+    const raw = Number(value);
+    if (!Number.isFinite(raw)) {
+        return 1;
+    }
+    return Math.max(MIN_BOARD_ZOOM, Math.min(MAX_BOARD_ZOOM, Math.round(raw * 10) / 10));
+}
+
+export function setBoardZoom(boardElement, zoom) {
+    if (!boardElement) {
+        return 1;
+    }
+    const normalized = normalizeZoom(zoom);
+    boardElement.style.setProperty("--board-zoom", String(normalized));
+    boardElement.dataset.zoom = String(normalized);
+    return normalized;
+}
+
+export function adjustBoardZoom(boardElement, direction = 0) {
+    const current = Number(boardElement?.dataset?.zoom || boardElement?.style?.getPropertyValue("--board-zoom") || 1);
+    return setBoardZoom(boardElement, current + BOARD_ZOOM_STEP * Number(direction || 0));
+}
+
 export function renderLegend(legendElement, players) {
     legendElement.innerHTML = "";
     players.forEach((token, index) => {
@@ -42,14 +69,21 @@ export function renderLegend(legendElement, players) {
 
 export function renderBoard(boardElement, state, onCellClick) {
     boardElement.innerHTML = "";
-    boardElement.style.setProperty("--size", String(state.boardSize));
+    const rows = Array.isArray(state.board) ? state.board.length : 0;
+    const cols = rows > 0 && Array.isArray(state.board[0]) ? state.board[0].length : 0;
+    boardElement.style.setProperty("--cols", String(cols));
+    boardElement.style.setProperty("--rows", String(rows));
 
-    for (let row = 0; row < state.boardSize; row += 1) {
-        for (let col = 0; col < state.boardSize; col += 1) {
+    if (!boardElement.dataset.zoom) {
+        setBoardZoom(boardElement, 1);
+    }
+
+    for (let row = 0; row < rows; row += 1) {
+        for (let col = 0; col < cols; col += 1) {
             const cell = document.createElement("button");
             cell.type = "button";
             cell.className = "cell";
-            const value = state.board[row][col];
+            const value = Number(state.board?.[row]?.[col] || 0);
 
             if (value !== 0) {
                 cell.classList.add("taken");

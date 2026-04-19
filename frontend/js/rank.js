@@ -1,4 +1,4 @@
-﻿import { buildStatus, renderBoard, renderLegend } from "./ui.js";
+﻿import { adjustBoardZoom, buildStatus, renderBoard, renderLegend, setBoardZoom } from "./ui.js";
 import { getActiveRoomSession } from "./api.js";
 import { requireSession } from "./session.js";
 import { initTopbar } from "./topbar.js?v=20260419n";
@@ -15,6 +15,9 @@ const queueInfo = document.getElementById("queueInfo");
 const board = document.getElementById("board");
 const legend = document.getElementById("legend");
 const status = document.getElementById("status");
+const zoomInBtn = document.getElementById("zoomInBtn");
+const zoomOutBtn = document.getElementById("zoomOutBtn");
+const zoomValue = document.getElementById("zoomValue");
 const vsCard = document.getElementById("vsCard");
 const vsText = document.getElementById("vsText");
 const victoryModal = document.getElementById("victoryModal");
@@ -29,6 +32,12 @@ let state = null;
 let remain = 120;
 let timer = null;
 let announcedResultKey = "";
+
+function updateZoomLabel(zoom) {
+    if (zoomValue) {
+        zoomValue.textContent = `${Math.round(Number(zoom || 1) * 100)}%`;
+    }
+}
 
 function rankText(player) {
     const displayTier = String(player?.displayTier || player?.rank_tier || "Bronze");
@@ -213,5 +222,12 @@ victoryBackBtn?.addEventListener("click", () => {
 victoryCloseBtn?.addEventListener("click", hideVictoryDialog);
 
 ensureSocket();
+updateZoomLabel(setBoardZoom(board, 1));
+zoomInBtn?.addEventListener("click", () => {
+    updateZoomLabel(adjustBoardZoom(board, 1));
+});
+zoomOutBtn?.addEventListener("click", () => {
+    updateZoomLabel(adjustBoardZoom(board, -1));
+});
 
 

@@ -712,11 +712,30 @@ button:disabled {
     letter-spacing: 0.05em;
 }
 
+.board-zoom-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.board-zoom-controls button {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+}
+
+.zoom-value {
+    font-size: 0.82rem;
+    color: #cbd5e1;
+}
+
 .board {
-    --size: 15;
-    --cell-size: clamp(26px, 2vw, 34px);
+    --cols: 15;
+    --board-zoom: 1;
+    --cell-base-size: clamp(26px, 2vw, 34px);
+    --cell-size: calc(var(--cell-base-size) * var(--board-zoom));
     display: grid;
-    grid-template-columns: repeat(var(--size), var(--cell-size));
+    grid-template-columns: repeat(var(--cols), var(--cell-size));
     gap: 2px;
     width: fit-content;
     margin: 0 auto;

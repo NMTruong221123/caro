@@ -1271,16 +1271,17 @@ def update_match(
     status: str,
     winner: Optional[int],
 ) -> None:
+    board_size = len(board)
     conn = _connection()
     try:
         conn.execute(
             """
             UPDATE matches
-            SET board_json = ?, current_player = ?, status = ?, winner = ?,
+            SET board_json = ?, board_size = ?, current_player = ?, status = ?, winner = ?,
                 updated_at = CURRENT_TIMESTAMP
             WHERE id = ?
             """,
-            (json.dumps(board), current_player, status, winner, match_id),
+            (json.dumps(board), board_size, current_player, status, winner, match_id),
         )
         conn.commit()
     finally:

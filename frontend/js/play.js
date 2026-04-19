@@ -1,6 +1,6 @@
 ﻿import { playMove, startMatch } from "./api.js";
 import { getSession, requireSession } from "./session.js";
-import { buildStatus, renderBoard, renderLegend } from "./ui.js";
+import { adjustBoardZoom, buildStatus, renderBoard, renderLegend, setBoardZoom } from "./ui.js";
 import { initTopbar } from "./topbar.js?v=20260419n";
 
 requireSession({ allowGuest: true });
@@ -21,6 +21,9 @@ const startBtn = document.getElementById("startBtn");
 const board = document.getElementById("board");
 const legend = document.getElementById("legend");
 const status = document.getElementById("status");
+const zoomInBtn = document.getElementById("zoomInBtn");
+const zoomOutBtn = document.getElementById("zoomOutBtn");
+const zoomValue = document.getElementById("zoomValue");
 const victoryModal = document.getElementById("victoryModal");
 const victoryText = document.getElementById("victoryText");
 const victoryBackBtn = document.getElementById("victoryBackBtn");
@@ -29,6 +32,12 @@ const victoryCloseBtn = document.getElementById("victoryCloseBtn");
 let state = null;
 let waiting = false;
 let announcedResultKey = "";
+
+function updateZoomLabel(zoom) {
+    if (zoomValue) {
+        zoomValue.textContent = `${Math.round(Number(zoom || 1) * 100)}%`;
+    }
+}
 
 function setStatus(message, isError = false) {
     if (!status) {
@@ -140,5 +149,13 @@ victoryCloseBtn?.addEventListener("click", hideVictoryDialog);
 if (mode === "ai") {
     startGame();
 }
+
+updateZoomLabel(setBoardZoom(board, 1));
+zoomInBtn?.addEventListener("click", () => {
+    updateZoomLabel(adjustBoardZoom(board, 1));
+});
+zoomOutBtn?.addEventListener("click", () => {
+    updateZoomLabel(adjustBoardZoom(board, -1));
+});
 
 

@@ -1,5 +1,5 @@
 ﻿import { createOnlineRoom, getActiveRoomSession, joinOnlineRoom } from "./api.js";
-import { buildStatus, renderBoard, renderLegend } from "./ui.js";
+import { adjustBoardZoom, buildStatus, renderBoard, renderLegend, setBoardZoom } from "./ui.js";
 import { getSession, requireSession } from "./session.js";
 import { initTopbar } from "./topbar.js?v=20260419n";
 
@@ -25,6 +25,9 @@ const sendChatBtn = document.getElementById("sendChatBtn");
 const board = document.getElementById("board");
 const legend = document.getElementById("legend");
 const status = document.getElementById("status");
+const zoomInBtn = document.getElementById("zoomInBtn");
+const zoomOutBtn = document.getElementById("zoomOutBtn");
+const zoomValue = document.getElementById("zoomValue");
 const victoryModal = document.getElementById("victoryModal");
 const victoryText = document.getElementById("victoryText");
 const victoryBackBtn = document.getElementById("victoryBackBtn");
@@ -34,6 +37,12 @@ let socket = null;
 let room = null;
 let state = null;
 let announcedResultKey = "";
+
+function updateZoomLabel(zoom) {
+    if (zoomValue) {
+        zoomValue.textContent = `${Math.round(Number(zoom || 1) * 100)}%`;
+    }
+}
 
 function canStartRoom() {
     if (!room || !currentUser) {
@@ -401,6 +410,13 @@ victoryCloseBtn?.addEventListener("click", hideVictoryDialog);
 
 ensureSocket();
 updateStartButtonState();
+updateZoomLabel(setBoardZoom(board, 1));
+zoomInBtn?.addEventListener("click", () => {
+    updateZoomLabel(adjustBoardZoom(board, 1));
+});
+zoomOutBtn?.addEventListener("click", () => {
+    updateZoomLabel(adjustBoardZoom(board, -1));
+});
 
 const prefilledCode = new URLSearchParams(window.location.search).get("code");
 if (prefilledCode) {
