@@ -1,11 +1,41 @@
 from datetime import datetime, timezone
+import importlib.util
+import os
 
 from flask import request
 from flask_socketio import SocketIO, emit, join_room, leave_room
 
 from backend.services import auth_service, online_service
 
-socketio = SocketIO(cors_allowed_origins="*", async_mode="threading")
+
+def _async_backend_available(mode: str) -> bool:
+    normalized = str(mode or "").strip().lower()
+    if normalized == "threading":
+        return True
+    if normalized == "eventlet":
+        return importlib.util.find_spec("eventlet") is not None
+    if normalized in {"gevent", "gevent_uwsgi"}:
+        return importlib.util.find_spec("gevent") is not None
+    return False
+
+
+def _resolve_async_mode() -> str:
+    requested = str(os.getenv("SOCKETIO_ASYNC_MODE", "")).strip().lower()
+    valid_modes = {"threading", "eventlet", "gevent", "gevent_uwsgi"}
+
+    if requested in valid_modes and _async_backend_available(requested):
+        return requested
+
+    for candidate in ("eventlet", "gevent", "threading"):
+        if _async_backend_available(candidate):
+            return candidate
+
+    return "threading"
+
+socketio = SocketIO(
+    cors_allowed_origins="*",
+    async_mode=_resolve_async_mode(),
+)
 CONNECTED_USERS: dict[str, dict[str, object]] = {}
 USER_SOCKETS: dict[int, set[str]] = {}
 

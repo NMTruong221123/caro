@@ -1,4 +1,5 @@
 import mimetypes
+import os
 import sys
 from pathlib import Path
 
@@ -54,6 +55,11 @@ def create_app() -> Flask:
     return app
 
 
+application = create_app()
+
+
 if __name__ == "__main__":
-    application = create_app()
-    socketio.run(application, host="0.0.0.0", port=5000, debug=True)
+    host = str(os.getenv("HOST", "0.0.0.0")).strip() or "0.0.0.0"
+    port = int(str(os.getenv("PORT", "5000")).strip() or "5000")
+    debug = str(os.getenv("FLASK_DEBUG", "0")).strip().lower() in {"1", "true", "yes", "on"}
+    socketio.run(application, host=host, port=port, debug=debug)

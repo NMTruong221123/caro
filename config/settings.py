@@ -2,7 +2,7 @@ from pathlib import Path
 import os
 
 ROOT_DIR = Path(__file__).resolve().parents[1]
-DB_PATH = ROOT_DIR / "database" / "app.db"
+DB_PATH = Path(os.getenv("DB_PATH", str(ROOT_DIR / "database" / "app.db")))
 SCHEMA_PATH = ROOT_DIR / "database" / "schema.sql"
 
 DEFAULT_BOARD_SIZE = 15

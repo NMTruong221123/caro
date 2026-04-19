@@ -1,0 +1,21 @@
+app = "caro-nmtruong221123"
+primary_region = "sin"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  DB_PATH = "/data/app.db"
+  SOCKETIO_ASYNC_MODE = "eventlet"
+
+[[mounts]]
+  source = "caro_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
