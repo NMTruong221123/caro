@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trang Chu - Co Caro</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <main class="home-shell">
+        <section class="home-hero panel">
+            <div>
+                <h1>Trang Chu</h1>
+                <p id="welcomeText" class="subtitle"></p>
+                <p id="equippedTitleText" class="small-status"></p>
+                <p id="profileSummary" class="small-status"></p>
+            </div>
+            <div class="rank-hero">
+                <img id="homeRankBadge" class="rank-badge xlarge hidden" alt="rank badge">
+                <p id="homeRankTitle" class="small-status"></p>
+            </div>
+        </section>
+
+        <section class="panel page-panel home-grid">
+            <div class="stat-card">
+                <h2>AI</h2>
+                <p id="aiStat" class="small-status">0%</p>
+            </div>
+            <div class="stat-card">
+                <h2>Room</h2>
+                <p id="roomStat" class="small-status">0%</p>
+            </div>
+            <div class="stat-card">
+                <h2>Rank</h2>
+                <p id="rankStat" class="small-status">0%</p>
+            </div>
+            <div class="stat-card">
+                <h2>Tien do</h2>
+                <p id="progressStat" class="small-status">Rong</p>
+            </div>
+        </section>
+
+        <section class="panel page-panel home-actions">
+            <button id="toModesBtn" type="button">Chon che do</button>
+            <button id="toSettingsBtn" type="button" class="ghost-btn">Cai dat danh hieu</button>
+            <button id="toHistoryBtn" type="button" class="ghost-btn">Lich su tran</button>
+            <button id="toAdminBtn" type="button" class="ghost-btn">Admin dashboard</button>
+        </section>
+    </main>
+    <script type="module" src="js/home.js?v=20260419m"></script>
+</body>
+</html>

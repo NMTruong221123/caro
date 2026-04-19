@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8e6f7"/><stop offset="1" stop-color="#9cb9df"/></linearGradient></defs>
+  <rect width="320" height="320" fill="#0b1220"/>
+  <circle cx="160" cy="140" r="92" fill="url(#g)" stroke="#f3fbff" stroke-width="10"/>
+  <rect x="115" y="94" width="90" height="120" rx="18" fill="#b7cdea" stroke="#f2f7ff" stroke-width="6"/>
+  <path d="M160 74 L182 94 L138 94 Z" fill="#f6fbff"/>
+  <text x="160" y="270" fill="#eaf6ff" font-size="29" font-family="Verdana" text-anchor="middle">RO BACH KIM</text>
+</svg>

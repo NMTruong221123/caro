@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dang Nhap - Game Co Caro</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <main class="single-page-shell">
+        <section class="panel auth-page-panel">
+            <h1>Co Caro</h1>
+            <p class="subtitle">Dang nhap de choi rank va luu du lieu, hoac chon choi ngay cho vui.</p>
+            <div class="auth-box">
+                <label>
+                    Username
+                    <input id="usernameInput" type="text" placeholder="Nhap ten tai khoan">
+                </label>
+                <label>
+                    Password
+                    <input id="passwordInput" type="password" placeholder="Toi thieu 6 ky tu">
+                </label>
+                <div class="auth-actions">
+                    <button id="registerBtn" type="button">Dang ky</button>
+                    <button id="loginBtn" type="button">Dang nhap</button>
+                </div>
+                <button id="guestBtn" type="button" class="ghost-btn">Choi ngay (khach)</button>
+                <p id="authStatus" class="small-status">Chua dang nhap.</p>
+            </div>
+            <div class="hint-box">
+                <p>Che do khach: khong choi rank, khong luu diem BXH.</p>
+            </div>
+        </section>
+    </main>
+    <script type="module" src="js/login.js?v=20260419d"></script>
+</body>
+</html>

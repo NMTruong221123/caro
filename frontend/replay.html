@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Replay Tran Dau - Co Caro</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <main class="app-shell">
+        <section class="panel">
+            <h1>Replay</h1>
+            <p id="replayMeta" class="small-status"></p>
+            <p id="replayStatus" class="small-status"></p>
+            <div class="inline-actions" style="margin-top: 10px;">
+                <button id="prevStepBtn" type="button" class="ghost-btn">Buoc truoc</button>
+                <button id="nextStepBtn" type="button">Buoc sau</button>
+            </div>
+            <div class="inline-actions">
+                <button id="playPauseBtn" type="button" class="ghost-btn">Play</button>
+                <button id="resetStepBtn" type="button" class="ghost-btn">Ve dau</button>
+            </div>
+            <label>
+                Thanh tua replay
+                <input id="stepRange" type="range" min="0" max="0" value="0">
+            </label>
+            <button id="backHistoryBtn" type="button" class="ghost-btn">Ve lich su</button>
+        </section>
+        <section class="board-section">
+            <h2 class="board-title">Ban Replay</h2>
+            <div id="replayBoard" class="board"></div>
+        </section>
+    </main>
+    <script type="module" src="js/replay.js?v=20260419a"></script>
+</body>
+</html>

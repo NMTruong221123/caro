@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd35a"/><stop offset="1" stop-color="#f6a11d"/></linearGradient></defs>
+  <rect width="320" height="320" fill="#1c1000"/>
+  <circle cx="160" cy="140" r="92" fill="url(#g)" stroke="#fff1bb" stroke-width="10"/>
+  <path d="M95 194 L225 194 L205 226 L115 226 Z" fill="#8a4b0b"/>
+  <path d="M95 194 L115 118 L145 152 L160 108 L175 152 L205 118 L225 194 Z" fill="#ffdd8b" stroke="#fff1bb" stroke-width="5"/>
+  <circle cx="160" cy="136" r="12" fill="#8a38e8"/>
+  <text x="160" y="270" fill="#ffe3a1" font-size="36" font-family="Verdana" text-anchor="middle">RO KING</text>
+</svg>

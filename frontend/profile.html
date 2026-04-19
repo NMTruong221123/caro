@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Co Caro</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <main class="single-page-shell">
+        <section class="panel page-panel profile-shell">
+            <h1>Profile Nguoi Choi</h1>
+            <div class="screen-card profile-header-card">
+                <div class="avatar-panel compact">
+                    <div class="profile-main-avatar">
+                        <div id="avatarPreview" class="avatar-preview large">🙂</div>
+                        <img id="profileRankBadge" class="rank-badge large hidden" alt="rank badge">
+                    </div>
+                    <div id="avatarPicker" class="avatar-picker"></div>
+                    <button id="saveAvatarBtn" type="button">Luu avatar</button>
+                </div>
+                <div class="profile-info-block">
+                    <p id="profileNameLine" class="small-status"></p>
+                    <div class="inline-actions profile-rename-row">
+                        <input id="renameInput" type="text" minlength="3" maxlength="24" placeholder="Nhap ten moi (3-24 ky tu)">
+                        <button id="renameBtn" type="button" class="ghost-btn">Doi ten</button>
+                    </div>
+                    <p id="renameStatus" class="small-status"></p>
+                    <p id="profileModeLine" class="small-status"></p>
+                    <p id="profileRankLine" class="small-status"></p>
+                    <p id="achievementSummary" class="small-status"></p>
+                </div>
+            </div>
+            <div class="inline-actions profile-shortcuts">
+                <button id="toMissionsBtn" type="button">Xem thanh tuu</button>
+                <button id="backHomeBtn" type="button" class="ghost-btn">Ve trang chu</button>
+            </div>
+            <div class="inline-actions profile-shortcuts">
+                <button id="toSettingsBtn" type="button">Cai dat danh hieu</button>
+            </div>
+        </section>
+    </main>
+    <script type="module" src="js/profile.js?v=20260419l"></script>
+</body>
+</html>

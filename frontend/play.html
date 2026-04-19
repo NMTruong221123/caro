@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tran Dau - Co Caro</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <main class="app-shell">
+        <section class="panel">
+            <h1 id="playTitle">Tran Dau</h1>
+            <div class="controls">
+                <label>
+                    Kich thuoc ban
+                    <input id="boardSize" type="number" min="5" max="99" value="15">
+                </label>
+                <label id="aiLevelWrap">
+                    Do kho AI
+                    <select id="aiLevel">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </label>
+                <label id="playersWrap" class="hidden">
+                    So nguoi choi
+                    <select id="playersCount">
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4" selected>4</option>
+                    </select>
+                </label>
+                <button id="startBtn" type="button">Bat dau van moi</button>
+                <button id="backModesBtn" type="button" class="ghost-btn">Ve chon che do</button>
+            </div>
+            <div class="legend" id="legend"></div>
+            <p id="status" class="status"></p>
+        </section>
+        <section class="board-section">
+            <h2 class="board-title">Map Choi</h2>
+            <div id="board" class="board"></div>
+        </section>
+    </main>
+    <script type="module" src="js/play.js?v=20260419h"></script>
+</body>
+</html>

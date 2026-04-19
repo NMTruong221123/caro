@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rank Match - Co Caro</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <main class="app-shell">
+        <section class="panel">
+            <h1>Ranked 1v1</h1>
+            <div class="controls">
+                <button id="queueBtn" type="button">Tim tran rank</button>
+                <p id="queueInfo" class="small-status"></p>
+                <div id="vsCard" class="screen-card hidden">
+                    <h2>Matchup</h2>
+                    <p id="vsText" class="small-status"></p>
+                </div>
+                <button id="backModesBtn" type="button" class="ghost-btn">Ve chon che do</button>
+            </div>
+            <div class="legend" id="legend"></div>
+            <p id="status" class="status"></p>
+        </section>
+        <section class="board-section">
+            <h2 class="board-title">Map Rank</h2>
+            <div id="board" class="board"></div>
+        </section>
+    </main>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script type="module" src="js/rank.js?v=20260419l"></script>
+</body>
+</html>

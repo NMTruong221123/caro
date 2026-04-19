@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Co Caro</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <main class="single-page-shell">
+        <section class="panel page-panel">
+            <h1>Admin Mini Dashboard</h1>
+            <p id="adminStatus" class="small-status"></p>
+            <p class="small-status">Khuyen nghi: dang nhap bang tai khoan ADMIN (mat khau 123456). O token ben duoi chi dung khi can override.</p>
+            <label>
+                Admin token (tuy chon)
+                <input id="adminTokenInput" type="password" placeholder="Bo trong neu dang nhap bang ADMIN">
+            </label>
+            <div class="inline-actions">
+                <button id="loadAdminBtn" type="button">Tai dashboard</button>
+                <button id="backHomeBtn" type="button" class="ghost-btn">Ve trang chu</button>
+            </div>
+
+            <section class="screen-card">
+                <h2>Thong ke nhanh</h2>
+                <p id="adminStatsText" class="small-status"></p>
+            </section>
+
+            <section class="screen-card">
+                <h2>Rooms dang hoat dong</h2>
+                <div id="activeRoomsList" class="controls"></div>
+            </section>
+
+            <section class="screen-card">
+                <h2>Top loi he thong</h2>
+                <div id="topErrorsList" class="controls"></div>
+            </section>
+
+            <section class="screen-card">
+                <h2>Bao mat rank queue</h2>
+                <div id="securityEventsList" class="controls"></div>
+            </section>
+
+            <section class="screen-card">
+                <h2>Cap nhat tu cam (custom)</h2>
+                <textarea id="adminBannedWordsInput" class="settings-textarea" rows="7" placeholder="moi dong mot tu"></textarea>
+                <div class="inline-actions">
+                    <button id="saveAdminBannedBtn" type="button">Luu tu cam</button>
+                    <button id="reloadAdminBtn" type="button" class="ghost-btn">Tai lai</button>
+                </div>
+            </section>
+        </section>
+    </main>
+    <script type="module" src="js/admin.js?v=20260419a"></script>
+</body>
+</html>

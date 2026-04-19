@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#95a3b5"/><stop offset="1" stop-color="#e9f1ff"/></linearGradient></defs>
+  <rect width="320" height="320" fill="#0d1018"/>
+  <circle cx="160" cy="140" r="92" fill="url(#g)" stroke="#f1f5ff" stroke-width="10"/>
+  <path d="M95 198 L154 104 L178 121 L119 215 Z" fill="#dfe6f4"/>
+  <path d="M225 198 L166 104 L142 121 L201 215 Z" fill="#d0d8e8"/>
+  <text x="160" y="270" fill="#e2ecff" font-size="36" font-family="Verdana" text-anchor="middle">RO BAC</text>
+</svg>

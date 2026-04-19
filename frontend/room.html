@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phong Online - Co Caro</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <main class="app-shell">
+        <section class="panel">
+            <h1>Phong Online</h1>
+            <div class="controls">
+                <label>
+                    So nguoi toi da
+                    <select id="onlineMaxPlayers">
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4" selected>4</option>
+                    </select>
+                </label>
+                <div class="inline-actions">
+                    <button id="createRoomBtn" type="button">Tao phong</button>
+                    <button id="startOnlineBtn" type="button">Bat dau</button>
+                </div>
+                <label>
+                    ID phong (6 ky tu)
+                    <input id="roomCodeInput" type="text" placeholder="Nhap ma phong">
+                </label>
+                <button id="joinRoomBtn" type="button">Vao phong</button>
+                <p id="roomInfo" class="small-status"></p>
+                <div>
+                    <p class="small-status">Thanh vien</p>
+                    <div id="roomMembers" class="room-members"></div>
+                </div>
+                <div class="chat-box">
+                    <p class="small-status">Chat phong</p>
+                    <div id="chatMessages" class="chat-messages"></div>
+                    <div class="chat-input-row">
+                        <input id="chatInput" type="text" maxlength="300" placeholder="Nhap tin nhan...">
+                        <button id="sendChatBtn" type="button">Gui</button>
+                    </div>
+                </div>
+                <button id="backModesBtn" type="button" class="ghost-btn">Ve chon che do</button>
+            </div>
+            <div class="legend" id="legend"></div>
+            <p id="status" class="status"></p>
+        </section>
+        <section class="board-section">
+            <h2 class="board-title">Map Choi</h2>
+            <div id="board" class="board"></div>
+        </section>
+    </main>
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+    <script type="module" src="js/room.js?v=20260419l"></script>
+</body>
+</html>

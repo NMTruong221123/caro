@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chon Che Do - Co Caro</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <main class="single-page-shell">
+        <section class="panel page-panel">
+            <h1>Chon Che Do</h1>
+            <div class="controls">
+                <section class="screen-card">
+                    <h2>Voi May</h2>
+                    <button id="playAiBtn" type="button">Choi voi may ngay</button>
+                </section>
+                <section class="screen-card">
+                    <h2>Nhom Local</h2>
+                    <button id="playMultiBtn" type="button">Choi nhieu nguoi local</button>
+                </section>
+                <section class="screen-card">
+                    <h2>Phong Online</h2>
+                    <button id="roomBtn" type="button">Vao giao dien phong</button>
+                    <label>
+                        ID phong
+                        <input id="quickRoomCode" type="text" maxlength="6" placeholder="VD: AB12CD">
+                    </label>
+                    <button id="quickJoinRoomBtn" type="button" class="ghost-btn">Vao nhanh theo ID</button>
+                </section>
+                <section class="screen-card">
+                    <h2>Ranked 1v1</h2>
+                    <button id="rankBtn" type="button">Ghep tran rank</button>
+                    <p id="rankHint" class="small-status"></p>
+                </section>
+                <button id="resumeRoomBtn" type="button" class="ghost-btn hidden">Tro lai tran dang choi</button>
+                <button id="backHomeBtn" type="button" class="ghost-btn">Ve trang chu</button>
+            </div>
+        </section>
+    </main>
+    <script type="module" src="js/modes.js?v=20260419i"></script>
+</body>
+</html>

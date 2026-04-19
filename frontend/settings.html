@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cai Dat Danh Hieu - Co Caro</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <main class="single-page-shell">
+        <section class="panel page-panel">
+            <h1>Cai dat danh hieu va khung</h1>
+            <p id="equippedInfo" class="small-status"></p>
+            <div id="rankCatalog" class="rank-catalog"></div>
+
+            <hr class="settings-divider">
+            <h2 class="settings-subtitle">Danh sach tu cam tuy chinh</h2>
+            <p class="small-status">Nhap moi tu tren mot dong (hoac cach bang dau phay). He thong tu dong ket hop voi bo loc mac dinh.</p>
+            <textarea id="customBannedWordsInput" class="settings-textarea" rows="8" placeholder="vi du:\ntucam1\ntucam2"></textarea>
+            <div class="inline-actions">
+                <button id="saveBannedWordsBtn" type="button">Luu tu cam</button>
+                <button id="reloadBannedWordsBtn" type="button" class="ghost-btn">Tai lai</button>
+            </div>
+            <p id="bannedWordsStatus" class="small-status"></p>
+
+            <button id="backProfileBtn" type="button" class="ghost-btn">Ve profile</button>
+        </section>
+    </main>
+    <script type="module" src="js/settings.js?v=20260419l"></script>
+</body>
+</html>

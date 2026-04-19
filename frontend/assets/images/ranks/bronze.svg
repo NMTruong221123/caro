@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#5a3218"/>
+      <stop offset="1" stop-color="#c27d3a"/>
+    </linearGradient>
+  </defs>
+  <rect width="320" height="320" fill="#140d08"/>
+  <circle cx="160" cy="140" r="92" fill="url(#g)" stroke="#f0c08a" stroke-width="10"/>
+  <path d="M160 78 L216 118 L196 214 L124 214 L104 118 Z" fill="#8d4e23" stroke="#f0c08a" stroke-width="7"/>
+  <text x="160" y="270" fill="#f8d7ae" font-size="34" font-family="Verdana" text-anchor="middle">RO DONG</text>
+</svg>
