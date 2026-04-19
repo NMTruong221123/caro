@@ -1,96 +1,126 @@
-# Game Co Caro Da Che Do
+# Co Caro - Fullstack Web Game
 
-Du an web game co caro voi:
-- Frontend: HTML/CSS/JavaScript thuan
-- Backend: Python Flask
-- Game logic: Python
-- Database: SQLite (luu truc tiep vao file)
+Du an game Co Caro fullstack, co cac che do choi voi may, local multiplayer, phong online realtime va rank 1v1.
 
-## Tinh nang
+## Live Demo
 
-1. Che do choi voi may (AI)
-- Quan co X/O truyen thong
-- AI Minimax + alpha-beta pruning
-- 3 do kho: easy, medium, hard
+- Web live: https://caro-0th9.onrender.com
+- Repository: https://github.com/NMTruong221123/caro
 
-2. Che do nhieu nguoi
-- 2-4 nguoi choi
-- Quan co la hinh khoi co mau: vuong, tam giac, chu nhat, tron
+## Tech Stack
 
-3. Phong online realtime (WebSocket)
-- Tao phong / vao phong theo ma phong
-- Nguoi choi that, dong bo ban co theo thoi gian thuc
-- Server kiem soat luot choi dung nguoi dung
-- Chi chu phong moi duoc bat dau tran
-- Co chat trong phong qua Socket.IO
-- Chu phong co the set/bo co-host
-- Chu phong va co-host co the mute/unmute va kick thanh vien
-- Kick khi dang choi se tinh thua ky thuat cho nguoi bi kick
-- Chat co loc tu cam va gioi han spam
+- Frontend: HTML, CSS, JavaScript (module)
+- Backend: Python Flask + Flask-SocketIO
+- Game engine: Python
+- Database: SQLite
+- Deployment: Render (Docker)
 
-4. Tai khoan + bang xep hang
-- Dang ky / dang nhap
-- Luu ELO chuan theo rating doi thu (expected score)
-- K-factor dong theo so tran da choi (nguoi moi bien dong nhanh hon, nguoi choi lau on dinh hon)
-- Tai khoan moi mac dinh rank Dong V (V thap nhat, I cao nhat trong cung bac)
+## Tinh nang chinh
 
-5. Luu tran dau
-- Luu tran dau, trang thai, nuoc di vao SQLite
+### 1) Gameplay
 
-## Cau truc chinh
+- AI mode (easy, medium, hard)
+- Local multiplayer 2-4 nguoi
+- Online room realtime qua Socket.IO
+- Ranked queue 1v1
+- Ban co mo rong dong:
+	- Khoi dau 15x15
+	- Khi danh sat bien, ban co tu mo rong theo cum 15 o moi phia
+- Zoom board:
+	- Zoom in / Zoom out trong cac trang choi
 
-- frontend/: giao dien va tuong tac
-- backend/: Flask API
-- game/: luat choi, AI, shape token
-- database/: schema SQLite va script khoi tao
+### 2) Tai khoan va rank
 
-## Chay du an
+- Dang ky, dang nhap, session token
+- ELO update theo doi thu
+- He thong rank tier + stars
+- Leaderboard cho AI / Room / Rank
+- Mailbox + inventory + equip title/frame
 
-1. Tao moi truong ao (khuyen nghi)
+### 3) Online moderation
 
-Windows PowerShell:
+- Chu phong / co-host
+- Mute / unmute / kick
+- Chuyen chu phong
+- Chat filter va spam guard
+- Anti-abuse cho rank queue (rate limit theo user/IP)
+
+### 4) Trai nghiem tran dau
+
+- Popup thong bao ket qua tran (thang/hoa)
+- Nut quay ve trang chon che do
+- Match history + replay
+- Reconnect vao tran dang choi
+
+### 5) Admin
+
+- Tai khoan built-in:
+	- Username: ADMIN
+	- Password: 123456
+- Dashboard mini: thong ke room, event bao mat, runtime errors, chat filter
+
+## Cau truc thu muc
+
+- frontend/: giao dien web
+- backend/: API Flask, Socket.IO, controllers/services
+- game/: logic game, AI, shape/token
+- database/: schema va script init
+- tests/: test suite
+
+## Chay local
+
+### 1) Tao virtual environment
+
+PowerShell:
 
 ```powershell
 python -m venv .venv
 .venv\Scripts\Activate.ps1
 ```
 
-2. Cai thu vien
+### 2) Cai dependencies
 
 ```powershell
 pip install -r requirements.txt
 ```
 
-3. Khoi tao database (co the bo qua vi server tu tao neu chua co)
+### 3) Khoi tao DB (tuy chon)
 
 ```powershell
 python database/init_db.py
 ```
 
-4. Chay server
+### 4) Chay server
 
 ```powershell
 python backend/server.py
 ```
 
-5. Mo trinh duyet
+### 5) Mo trinh duyet
 
-- Truy cap http://127.0.0.1:5000
+- http://127.0.0.1:5000
 
-## Deploy khong can the (Render)
+## Test
 
-Neu ban khong co the de dung Fly.io, co the deploy len Render bang repo GitHub nay.
+```powershell
+python -m pytest -q
+```
 
-1. Vao Render Dashboard va chon New + > Blueprint.
-2. Chon repo GitHub `NMTruong221123/caro`.
-3. Render se doc file `render.yaml` trong repo va tao service tu dong.
-4. Bam Deploy.
+## Deploy Render (khong can the)
 
-Luu y:
-- Goi free cua Render co the sleep khi khong co truy cap trong mot khoang thoi gian.
-- Ban van choi duoc full game (Flask + Socket.IO), nhung du lieu SQLite tren free service khong dam bao luu ben vung nhu volume tra phi.
+Repo da co san file render.yaml va Dockerfile.
 
-## API chinh
+1. Vao Render dashboard
+2. New + > Blueprint
+3. Chon repo NMTruong221123/caro
+4. Deploy
+
+Luu y goi free:
+
+- Service co the sleep khi khong co truy cap
+- Request dau tien sau khi sleep co the tre
+
+## API tieu bieu
 
 - POST /api/game/start
 - POST /api/game/move
@@ -99,14 +129,13 @@ Luu y:
 - POST /api/user/login
 - GET /api/user/me
 - GET /api/user/leaderboard
+- GET /api/user/matches
+- GET /api/user/matches/<match_id>/replay
 - POST /api/online/room/create
 - POST /api/online/room/join
-- GET /api/online/room/<code>
+- GET /api/online/room/active
 
-## Su dung phong online
+## Ghi chu van hanh
 
-1. Dang ky va dang nhap o panel ben trai
-2. Chon che do "Phong online realtime"
-3. Tao phong hoac nhap ma phong de vao phong
-4. Bam "Bat dau online" de tao tran khi da du nguoi
-5. Choi tren cung ma phong o cac tab/thiet bi khac nhau
+- Neu cap nhat frontend nhung chua thay doi ngay, hay Ctrl+F5 de clear cache.
+- Render free co cold start, la hanh vi binh thuong.
