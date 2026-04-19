@@ -713,10 +713,19 @@ button:disabled {
 }
 
 .board-zoom-controls {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 72;
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-bottom: 10px;
+    padding: 8px 10px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: rgba(2, 6, 23, 0.86);
+    backdrop-filter: blur(7px);
+    box-shadow: 0 10px 22px rgba(2, 6, 23, 0.4);
 }
 
 .board-zoom-controls button {
@@ -725,6 +734,8 @@ button:disabled {
 }
 
 .zoom-value {
+    min-width: 48px;
+    text-align: center;
     font-size: 0.82rem;
     color: #cbd5e1;
 }
@@ -911,5 +922,12 @@ button:disabled {
 
     .self-rank-footer {
         text-align: left;
+    }
+
+    .board-zoom-controls {
+        right: 10px;
+        bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+        gap: 6px;
+        padding: 7px 8px;
     }
 }
