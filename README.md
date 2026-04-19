@@ -77,6 +77,19 @@ python backend/server.py
 
 - Truy cap http://127.0.0.1:5000
 
+## Deploy khong can the (Render)
+
+Neu ban khong co the de dung Fly.io, co the deploy len Render bang repo GitHub nay.
+
+1. Vao Render Dashboard va chon New + > Blueprint.
+2. Chon repo GitHub `NMTruong221123/caro`.
+3. Render se doc file `render.yaml` trong repo va tao service tu dong.
+4. Bam Deploy.
+
+Luu y:
+- Goi free cua Render co the sleep khi khong co truy cap trong mot khoang thoi gian.
+- Ban van choi duoc full game (Flask + Socket.IO), nhung du lieu SQLite tren free service khong dam bao luu ben vung nhu volume tra phi.
+
 ## API chinh
 
 - POST /api/game/start

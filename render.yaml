@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: caro-game
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    envVars:
+      - key: DB_PATH
+        value: /opt/render/project/src/database/app.db
+      - key: SOCKETIO_ASYNC_MODE
+        value: eventlet
+      - key: ADMIN_DASHBOARD_TOKEN
+        generateValue: true
