@@ -1,4 +1,4 @@
-﻿import { adjustBoardZoom, buildStatus, renderBoard, renderLegend, setBoardZoom } from "./ui.js";
+﻿import { adjustBoardZoom, buildStatus, makeZoomControlsDraggable, renderBoard, renderLegend, setBoardZoom } from "./ui.js";
 import { getActiveRoomSession } from "./api.js";
 import { requireSession } from "./session.js";
 import { initTopbar } from "./topbar.js?v=20260419n";
@@ -18,6 +18,7 @@ const status = document.getElementById("status");
 const zoomInBtn = document.getElementById("zoomInBtn");
 const zoomOutBtn = document.getElementById("zoomOutBtn");
 const zoomValue = document.getElementById("zoomValue");
+const zoomControls = document.querySelector(".board-zoom-controls");
 const vsCard = document.getElementById("vsCard");
 const vsText = document.getElementById("vsText");
 const victoryModal = document.getElementById("victoryModal");
@@ -223,6 +224,7 @@ victoryCloseBtn?.addEventListener("click", hideVictoryDialog);
 
 ensureSocket();
 updateZoomLabel(setBoardZoom(board, 1));
+makeZoomControlsDraggable(zoomControls, "caro_zoom_widget_rank");
 zoomInBtn?.addEventListener("click", () => {
     updateZoomLabel(adjustBoardZoom(board, 1));
 });

@@ -1,5 +1,5 @@
 ﻿import { getMe } from "./api.js";
-import { requireSession } from "./session.js";
+import { handleTokenInvalidError, requireSession, saveSession } from "./session.js";
 import { initTopbar } from "./topbar.js?v=20260419n";
 
 const session = requireSession({ allowGuest: true });
@@ -82,8 +82,20 @@ if (session) {
         renderSummary(user);
     } else {
         getMe(session.token)
-            .then((data) => renderSummary(data.user || user))
-            .catch(() => renderSummary(user));
+            .then((data) => {
+                const nextUser = data.user || user;
+                saveSession({
+                    ...session,
+                    user: nextUser,
+                });
+                renderSummary(nextUser);
+            })
+            .catch((error) => {
+                if (handleTokenInvalidError(error)) {
+                    return;
+                }
+                renderSummary(user);
+            });
     }
 }
 

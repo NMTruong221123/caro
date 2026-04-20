@@ -47,6 +47,125 @@ export function adjustBoardZoom(boardElement, direction = 0) {
     return setBoardZoom(boardElement, current + BOARD_ZOOM_STEP * Number(direction || 0));
 }
 
+function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+}
+
+function parseStoredPosition(storageKey) {
+    if (!storageKey) {
+        return null;
+    }
+    try {
+        const raw = localStorage.getItem(storageKey);
+        if (!raw) {
+            return null;
+        }
+        const parsed = JSON.parse(raw);
+        const left = Number(parsed?.left);
+        const top = Number(parsed?.top);
+        if (!Number.isFinite(left) || !Number.isFinite(top)) {
+            return null;
+        }
+        return { left, top };
+    } catch (_error) {
+        return null;
+    }
+}
+
+function savePosition(storageKey, left, top) {
+    if (!storageKey) {
+        return;
+    }
+    try {
+        localStorage.setItem(
+            storageKey,
+            JSON.stringify({
+                left: Math.round(left),
+                top: Math.round(top),
+            }),
+        );
+    } catch (_error) {
+        // Ignore storage failures.
+    }
+}
+
+export function makeZoomControlsDraggable(controlsElement, storageKey = "") {
+    if (!controlsElement || controlsElement.dataset.draggableReady === "1") {
+        return;
+    }
+    controlsElement.dataset.draggableReady = "1";
+
+    const margin = 8;
+
+    const setPosition = (left, top, persist = true) => {
+        const rect = controlsElement.getBoundingClientRect();
+        const maxLeft = Math.max(margin, window.innerWidth - rect.width - margin);
+        const maxTop = Math.max(margin, window.innerHeight - rect.height - margin);
+        const nextLeft = clamp(left, margin, maxLeft);
+        const nextTop = clamp(top, margin, maxTop);
+
+        controlsElement.style.left = `${nextLeft}px`;
+        controlsElement.style.top = `${nextTop}px`;
+        controlsElement.style.right = "auto";
+        controlsElement.style.bottom = "auto";
+
+        if (persist) {
+            savePosition(storageKey, nextLeft, nextTop);
+        }
+    };
+
+    const stored = parseStoredPosition(storageKey);
+    if (stored) {
+        setPosition(stored.left, stored.top, false);
+    }
+
+    let dragging = false;
+    let offsetX = 0;
+    let offsetY = 0;
+
+    controlsElement.addEventListener("pointerdown", (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) {
+            return;
+        }
+        if (target.closest("button")) {
+            return;
+        }
+
+        dragging = true;
+        controlsElement.classList.add("dragging");
+
+        const rect = controlsElement.getBoundingClientRect();
+        offsetX = event.clientX - rect.left;
+        offsetY = event.clientY - rect.top;
+
+        controlsElement.setPointerCapture(event.pointerId);
+        event.preventDefault();
+    });
+
+    controlsElement.addEventListener("pointermove", (event) => {
+        if (!dragging) {
+            return;
+        }
+        setPosition(event.clientX - offsetX, event.clientY - offsetY);
+    });
+
+    const endDrag = () => {
+        dragging = false;
+        controlsElement.classList.remove("dragging");
+    };
+
+    controlsElement.addEventListener("pointerup", endDrag);
+    controlsElement.addEventListener("pointercancel", endDrag);
+
+    window.addEventListener("resize", () => {
+        const rect = controlsElement.getBoundingClientRect();
+        if (controlsElement.style.left && controlsElement.style.top) {
+            setPosition(rect.left, rect.top);
+        }
+    });
+}
+
 export function renderLegend(legendElement, players) {
     legendElement.innerHTML = "";
     players.forEach((token, index) => {

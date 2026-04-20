@@ -726,11 +726,20 @@ button:disabled {
     background: rgba(2, 6, 23, 0.86);
     backdrop-filter: blur(7px);
     box-shadow: 0 10px 22px rgba(2, 6, 23, 0.4);
+    user-select: none;
+    touch-action: none;
+    cursor: grab;
+}
+
+.board-zoom-controls.dragging {
+    cursor: grabbing;
 }
 
 .board-zoom-controls button {
     padding: 6px 10px;
     font-size: 0.85rem;
+    cursor: pointer;
+    touch-action: auto;
 }
 
 .zoom-value {

@@ -1,6 +1,6 @@
 ﻿import { playMove, startMatch } from "./api.js";
 import { getSession, requireSession } from "./session.js";
-import { adjustBoardZoom, buildStatus, renderBoard, renderLegend, setBoardZoom } from "./ui.js";
+import { adjustBoardZoom, buildStatus, makeZoomControlsDraggable, renderBoard, renderLegend, setBoardZoom } from "./ui.js";
 import { initTopbar } from "./topbar.js?v=20260419n";
 
 requireSession({ allowGuest: true });
@@ -24,6 +24,7 @@ const status = document.getElementById("status");
 const zoomInBtn = document.getElementById("zoomInBtn");
 const zoomOutBtn = document.getElementById("zoomOutBtn");
 const zoomValue = document.getElementById("zoomValue");
+const zoomControls = document.querySelector(".board-zoom-controls");
 const victoryModal = document.getElementById("victoryModal");
 const victoryText = document.getElementById("victoryText");
 const victoryBackBtn = document.getElementById("victoryBackBtn");
@@ -151,6 +152,7 @@ if (mode === "ai") {
 }
 
 updateZoomLabel(setBoardZoom(board, 1));
+makeZoomControlsDraggable(zoomControls, "caro_zoom_widget_play");
 zoomInBtn?.addEventListener("click", () => {
     updateZoomLabel(adjustBoardZoom(board, 1));
 });

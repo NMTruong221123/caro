@@ -1,5 +1,5 @@
 ﻿import { getMatchReplay } from "./api.js";
-import { requireSession } from "./session.js";
+import { handleTokenInvalidError, requireSession } from "./session.js";
 import { initTopbar } from "./topbar.js?v=20260419n";
 
 const session = requireSession({ allowGuest: false });
@@ -152,6 +152,9 @@ async function loadReplay() {
         rebuildBoard();
         applyStep(0);
     } catch (error) {
+        if (handleTokenInvalidError(error)) {
+            return;
+        }
         setStatus(error.message || "Khong tai duoc replay", true);
     }
 }

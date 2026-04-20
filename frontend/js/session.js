@@ -25,6 +25,20 @@ export function clearSession() {
     localStorage.removeItem("caro_token");
 }
 
+export function isTokenInvalidError(error) {
+    const message = String(error?.message || "").toLowerCase();
+    return message.includes("token khong hop le") || message.includes("unauthorized") || message.includes("401");
+}
+
+export function handleTokenInvalidError(error) {
+    if (!isTokenInvalidError(error)) {
+        return false;
+    }
+    clearSession();
+    window.location.href = "/?reason=session_expired";
+    return true;
+}
+
 export function createGuestSession() {
     const guest = {
         id: randomId(),
@@ -56,6 +70,11 @@ export function createGuestSession() {
 export function requireSession({ allowGuest = true } = {}) {
     const session = getSession();
     if (!session) {
+        window.location.href = "/";
+        return null;
+    }
+    if (!session.guest && !String(session.token || "").trim()) {
+        clearSession();
         window.location.href = "/";
         return null;
     }

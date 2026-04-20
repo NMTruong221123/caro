@@ -1,5 +1,5 @@
 ﻿import { getMatchHistory } from "./api.js";
-import { requireSession } from "./session.js";
+import { handleTokenInvalidError, requireSession } from "./session.js";
 import { initTopbar } from "./topbar.js?v=20260419n";
 
 const session = requireSession({ allowGuest: false });
@@ -96,6 +96,9 @@ async function loadHistory() {
         renderHistory(items);
         setStatus(`Da tai ${items.length} tran.`);
     } catch (error) {
+        if (handleTokenInvalidError(error)) {
+            return;
+        }
         setStatus(error.message || "Khong tai duoc lich su tran", true);
     }
 }
