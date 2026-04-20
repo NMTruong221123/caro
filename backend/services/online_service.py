@@ -85,6 +85,21 @@ def room_payload(room: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+def _next_active_player_index(current_player: int, active_indices: list[int]) -> Optional[int]:
+    if not active_indices:
+        return None
+
+    ordered = sorted({int(item) for item in active_indices})
+    current = int(current_player)
+    if current in ordered:
+        return current
+
+    for index in ordered:
+        if index > current:
+            return index
+    return ordered[0]
+
+
 def get_room(code: str) -> Optional[Dict[str, Any]]:
     room = db_service.get_room_by_code(code)
     if not room:
@@ -273,6 +288,45 @@ def process_online_move(code: str, user_id: int, row: int, col: int) -> Optional
     room_players = db_service.list_room_players(room_id)
     player_map = {int(player["player_index"]): int(player["user_id"]) for player in room_players}
 
+    normalized_current = _next_active_player_index(int(state["current_player"]), list(player_map.keys()))
+    if normalized_current is None:
+        state["status"] = "draw"
+        state["winner"] = None
+        db_service.update_match(
+            match_id=match_id,
+            board=state["board"],
+            current_player=int(state["current_player"]),
+            status="draw",
+            winner=None,
+        )
+        db_service.finish_room(room_id)
+        updated_match = db_service.get_match(match_id)
+        if not updated_match:
+            return None
+        parsed = game_service.parse_match(updated_match)
+        moves = db_service.list_moves(match_id)
+        return {
+            "room": room_payload(db_service.get_room_by_code(code) or room),
+            "state": {
+                "matchId": parsed["id"],
+                "mode": parsed["mode"],
+                "matchType": parsed.get("match_type", "casual"),
+                "boardSize": parsed["board_size"],
+                "winLength": parsed["win_length"],
+                "playersCount": parsed["players_count"],
+                "players": parsed["players"],
+                "board": parsed["board"],
+                "currentPlayer": parsed["current_player"],
+                "status": parsed["status"],
+                "winner": parsed["winner"],
+                "moves": moves,
+                "roomPlayers": room_players,
+            },
+        }
+
+    if normalized_current != int(state["current_player"]):
+        state["current_player"] = normalized_current
+
     expected_user_id = player_map.get(int(state["current_player"]))
     if expected_user_id != user_id:
         return None
@@ -280,6 +334,14 @@ def process_online_move(code: str, user_id: int, row: int, col: int) -> Optional
     move = game_service.apply_player_move(state, row, col)
     if move is None:
         return None
+
+    if state["status"] == "playing":
+        next_player = _next_active_player_index(int(state["current_player"]), list(player_map.keys()))
+        if next_player is None:
+            state["status"] = "draw"
+            state["winner"] = None
+        else:
+            state["current_player"] = next_player
 
     turn = db_service.count_moves(match_id) + 1
     db_service.save_move(
@@ -662,6 +724,117 @@ def owner_transfer_ownership(code: str, owner_user_id: int, target_user_id: int)
     return {
         "room": room_payload(updated),
         "systemMessage": f"Chu phong da duoc chuyen cho {target['username']}.",
+    }
+
+
+def handle_user_disconnect(user_id: int) -> Optional[Dict[str, Any]]:
+    room = db_service.get_active_room_for_user(user_id)
+    if not room:
+        return None
+
+    room_id = int(room["id"])
+    code = str(room.get("code", ""))
+    if not code:
+        return None
+
+    room_players = db_service.list_room_players(room_id)
+    leaving_player = next((item for item in room_players if int(item["user_id"]) == int(user_id)), None)
+    if not leaving_player:
+        return None
+
+    match_id = int(room.get("match_id") or 0)
+    if match_id <= 0:
+        return None
+
+    match = db_service.get_match(match_id)
+    if not match:
+        return None
+
+    match_state = game_service.parse_match(match)
+    if str(match_state.get("status")) != "playing":
+        return None
+
+    ranked = str(match.get("match_type", room.get("room_type", "casual"))) == "ranked"
+
+    # 1v1 ranked/casual: disconnect counts as technical loss.
+    if len(room_players) <= 2:
+        survivor_indices = [
+            int(player["player_index"])
+            for player in room_players
+            if int(player["user_id"]) != int(user_id)
+        ]
+        winner_index = survivor_indices[0] if survivor_indices else None
+        status = "finished" if winner_index is not None else "draw"
+        current_player = winner_index if winner_index is not None else int(match_state["current_player"])
+
+        db_service.update_match(
+            match_id=match_id,
+            board=match_state["board"],
+            current_player=current_player,
+            status=status,
+            winner=winner_index,
+        )
+        db_service.finish_room(room_id)
+        db_service.apply_elo_results(
+            room_players,
+            winner_index=winner_index,
+            is_draw=winner_index is None,
+            ranked=ranked,
+        )
+        db_service.remove_player_from_room(room_id, int(user_id))
+
+        updated_room = db_service.get_room_by_code(code) or room
+        return {
+            "code": code,
+            "room": room_payload(updated_room),
+            "state": get_room_match_state(code),
+            "systemMessage": f"Nguoi choi {leaving_player['username']} da roi tran va bi xu thua ky thuat.",
+        }
+
+    # >2 players: remove disconnected player, keep board state and continue with active players.
+    db_service.remove_player_from_room(room_id, int(user_id))
+    opponents = [item for item in room_players if int(item["user_id"]) != int(user_id)]
+    db_service.apply_forfeit_loss(leaving_player, opponents, ranked=ranked)
+
+    remaining_players = db_service.list_room_players(room_id)
+    if not remaining_players:
+        db_service.update_match(
+            match_id=match_id,
+            board=match_state["board"],
+            current_player=int(match_state["current_player"]),
+            status="draw",
+            winner=None,
+        )
+        db_service.finish_room(room_id)
+    elif len(remaining_players) == 1:
+        winner_index = int(remaining_players[0]["player_index"])
+        db_service.update_match(
+            match_id=match_id,
+            board=match_state["board"],
+            current_player=winner_index,
+            status="finished",
+            winner=winner_index,
+        )
+        db_service.finish_room(room_id)
+    else:
+        next_player = _next_active_player_index(
+            int(match_state["current_player"]),
+            [int(item["player_index"]) for item in remaining_players],
+        )
+        db_service.update_match(
+            match_id=match_id,
+            board=match_state["board"],
+            current_player=next_player or int(match_state["current_player"]),
+            status="playing",
+            winner=None,
+        )
+
+    updated_room = db_service.get_room_by_code(code) or room
+    return {
+        "code": code,
+        "room": room_payload(updated_room),
+        "state": get_room_match_state(code),
+        "systemMessage": f"Nguoi choi {leaving_player['username']} da roi tran, luot cua nguoi nay se bi khoa.",
     }
 
 

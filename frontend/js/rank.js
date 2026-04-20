@@ -33,6 +33,22 @@ let state = null;
 let remain = 120;
 let timer = null;
 let announcedResultKey = "";
+let queueLocked = false;
+
+function syncQueueButton() {
+    if (!queueBtn) {
+        return;
+    }
+
+    if (queueLocked) {
+        queueBtn.disabled = true;
+        queueBtn.textContent = "Dang trong tran";
+        return;
+    }
+
+    queueBtn.disabled = false;
+    queueBtn.textContent = searching ? "Huy tim tran" : "Tim tran rank";
+}
 
 function updateZoomLabel(zoom) {
     if (zoomValue) {
@@ -59,6 +75,31 @@ function setStatus(msg, isError = false) {
 
 function hideVictoryDialog() {
     victoryModal?.classList.add("hidden");
+}
+
+function resetRankViewAndBackToQueue() {
+    clearInterval(timer);
+    searching = false;
+    roomCode = "";
+    state = null;
+    queueLocked = false;
+    announcedResultKey = "";
+    hideVictoryDialog();
+
+    vsCard?.classList.add("hidden");
+    if (vsText) {
+        vsText.textContent = "";
+    }
+    if (board) {
+        board.innerHTML = "";
+    }
+    if (legend) {
+        legend.innerHTML = "";
+    }
+    setStatus("San sang tim tran moi.");
+    setQueueInfo("Ban co the tim tran rank moi.");
+    syncQueueButton();
+    window.location.href = "/rank.html";
 }
 
 function maybeShowMatchResult(matchState) {
@@ -100,7 +141,8 @@ function startCountdown() {
         setQueueInfo(`Dang ghep tran... ${remain}s`);
         if (remain <= 0) {
             searching = false;
-            queueBtn.textContent = "Tim tran rank";
+            queueLocked = false;
+            syncQueueButton();
             socket.emit("rank_queue_cancel");
             setQueueInfo("Ghep tran khong thanh cong do khong co nguoi choi.", true);
             clearInterval(timer);
@@ -131,6 +173,9 @@ function ensureSocket() {
             state = sessionPayload.state || null;
             announcedResultKey = "";
             hideVictoryDialog();
+            queueLocked = true;
+            searching = false;
+            syncQueueButton();
             setQueueInfo(`Da reconnect vao tran dang choi: ${roomCode}`);
             socket.emit("join_room", { code: roomCode });
 
@@ -148,25 +193,29 @@ function ensureSocket() {
     socket.on("room_error", (payload) => setQueueInfo(payload?.error || "Loi", true));
     socket.on("rank_queue_waiting", () => {
         searching = true;
-        queueBtn.textContent = "Huy tim tran";
+        queueLocked = false;
+        syncQueueButton();
         startCountdown();
     });
     socket.on("rank_queue_timeout", (payload) => {
         searching = false;
-        queueBtn.textContent = "Tim tran rank";
+        queueLocked = false;
+        syncQueueButton();
         clearInterval(timer);
         setQueueInfo(payload?.message || "Het thoi gian tim tran", true);
     });
     socket.on("rank_queue_canceled", () => {
         searching = false;
-        queueBtn.textContent = "Tim tran rank";
+        queueLocked = false;
+        syncQueueButton();
         clearInterval(timer);
         setQueueInfo("Da huy tim tran rank.");
     });
 
     socket.on("rank_queue_matched", (payload) => {
         searching = false;
-        queueBtn.textContent = "Tim tran rank";
+        queueLocked = true;
+        syncQueueButton();
         clearInterval(timer);
         roomCode = String(payload?.code || "");
         announcedResultKey = "";
@@ -177,6 +226,9 @@ function ensureSocket() {
     socket.on("room_state", (payload) => {
         if (payload.room?.code) {
             roomCode = payload.room.code;
+            queueLocked = true;
+            searching = false;
+            syncQueueButton();
             const players = payload.room.players || [];
             if (players.length >= 2) {
                 vsCard.classList.remove("hidden");
@@ -198,6 +250,9 @@ function ensureSocket() {
 }
 
 function onQueueToggle() {
+    if (queueLocked || roomCode) {
+        return;
+    }
     const io = ensureSocket();
     if (!searching) {
         io.emit("rank_queue_join");
@@ -220,9 +275,10 @@ document.getElementById("backModesBtn")?.addEventListener("click", () => {
 victoryBackBtn?.addEventListener("click", () => {
     window.location.href = "/modes.html";
 });
-victoryCloseBtn?.addEventListener("click", hideVictoryDialog);
+victoryCloseBtn?.addEventListener("click", resetRankViewAndBackToQueue);
 
 ensureSocket();
+syncQueueButton();
 updateZoomLabel(setBoardZoom(board, 1));
 makeZoomControlsDraggable(zoomControls, "caro_zoom_widget_rank");
 zoomInBtn?.addEventListener("click", () => {

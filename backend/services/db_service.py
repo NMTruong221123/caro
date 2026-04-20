@@ -538,6 +538,12 @@ def create_user(username: str, password_hash: str) -> Optional[int]:
 
     conn = _connection()
     try:
+        exists = conn.execute(
+            "SELECT id FROM users WHERE UPPER(username) = UPPER(?) LIMIT 1",
+            (normalized_username,),
+        ).fetchone()
+        if exists:
+            return None
         try:
             cursor = conn.execute(
                 "INSERT INTO users (username, password_hash) VALUES (?, ?)",
@@ -558,12 +564,10 @@ def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
 
     conn = _connection()
     try:
-        row = conn.execute("SELECT * FROM users WHERE username = ?", (normalized_username,)).fetchone()
-        if not row and is_reserved_username(normalized_username):
-            row = conn.execute(
-                "SELECT * FROM users WHERE UPPER(username) = ?",
-                (_BUILTIN_ADMIN_USERNAME,),
-            ).fetchone()
+        row = conn.execute(
+            "SELECT * FROM users WHERE UPPER(username) = UPPER(?) ORDER BY id ASC LIMIT 1",
+            (normalized_username,),
+        ).fetchone()
         return dict(row) if row else None
     finally:
         conn.close()
@@ -646,6 +650,13 @@ def update_username(user_id: int, username: str) -> str:
             normalized_username = _BUILTIN_ADMIN_USERNAME
         elif current_is_builtin_admin:
             return "reserved"
+
+        conflict = conn.execute(
+            "SELECT id FROM users WHERE UPPER(username) = UPPER(?) AND id <> ? LIMIT 1",
+            (normalized_username, user_id),
+        ).fetchone()
+        if conflict:
+            return "exists"
 
         try:
             cursor = conn.execute("UPDATE users SET username = ? WHERE id = ?", (normalized_username, user_id))

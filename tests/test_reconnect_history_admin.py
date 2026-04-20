@@ -168,3 +168,47 @@ def test_profile_rename_blocks_reserved_admin_username():
 
     assert response.status_code == 403
     assert "bao luu" in str(body.get("error", "")).lower()
+
+
+def test_register_blocks_case_insensitive_duplicate_username():
+    client = app.test_client()
+
+    suffix = uuid.uuid4().hex[:8]
+    first_name = f"CaseUser_{suffix}"
+
+    first = client.post(
+        "/api/user/register",
+        json={"username": first_name, "password": "123456"},
+    )
+    assert first.status_code == 201
+
+    duplicate = client.post(
+        "/api/user/register",
+        json={"username": first_name.lower(), "password": "123456"},
+    )
+    duplicate_body = duplicate.get_json()
+
+    assert duplicate.status_code == 409
+    assert "ton tai" in str(duplicate_body.get("error", "")).lower()
+
+
+def test_login_allows_case_insensitive_username_lookup():
+    client = app.test_client()
+
+    suffix = uuid.uuid4().hex[:8]
+    mixed_case_username = f"MixCase_{suffix}"
+    register = client.post(
+        "/api/user/register",
+        json={"username": mixed_case_username, "password": "123456"},
+    )
+    assert register.status_code == 201
+
+    login = client.post(
+        "/api/user/login",
+        json={"username": mixed_case_username.lower(), "password": "123456"},
+    )
+    login_body = login.get_json()
+
+    assert login.status_code == 200
+    assert str(login_body["user"]["username"]) == mixed_case_username
+    assert str(login_body["token"])

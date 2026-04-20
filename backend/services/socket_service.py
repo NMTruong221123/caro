@@ -94,8 +94,21 @@ def on_disconnect():
     sockets.discard(request.sid)
     if not sockets:
         USER_SOCKETS.pop(uid, None)
+        online_service.rank_queue_cancel(uid, sid=request.sid)
 
-    online_service.rank_queue_cancel(uid, sid=request.sid)
+        disconnect_result = online_service.handle_user_disconnect(uid)
+        if disconnect_result:
+            code = str(disconnect_result.get("code", ""))
+            if code:
+                payload = {"room": disconnect_result.get("room")}
+                state = disconnect_result.get("state")
+                if state:
+                    payload["state"] = state
+
+                emit("room_state", payload, to=code)
+                system_message = disconnect_result.get("systemMessage")
+                if system_message:
+                    _emit_system_chat(code, str(system_message))
 
 
 @socketio.on("rank_queue_join")

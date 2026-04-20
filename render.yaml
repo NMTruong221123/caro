@@ -5,9 +5,13 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     autoDeploy: true
+    disks:
+      - name: caro-data
+        mountPath: /var/data
+        sizeGB: 1
     envVars:
       - key: DB_PATH
-        value: /opt/render/project/src/database/app.db
+        value: /var/data/app.db
       - key: SOCKETIO_ASYNC_MODE
         value: eventlet
       - key: ADMIN_DASHBOARD_TOKEN
